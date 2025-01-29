@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Coming Soon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f06, #4a90e2);
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        #countdown {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        #countdown div {
+            font-size: 2.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            width: 100px;
+            text-align: center;
+        }
+
+        #countdown div span {
+            display: block;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Coming Soon!</h1>
+            <p>We're working hard to bring something amazing. Stay tuned!</p>
+            <div id="countdown">
+                <div id="days"></div>
+                <div id="hours"></div>
+                <div id="minutes"></div>
+                <div id="seconds"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set the target date
+        const targetDate = new Date("May 1, 2025 00:00:00").getTime();
+
+        // Update the countdown every second
+        const countdown = setInterval(function() {
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerHTML = `${days} <span>Days</span>`;
+            document.getElementById("hours").innerHTML = `${hours} <span>Hours</span>`;
+            document.getElementById("minutes").innerHTML = `${minutes} <span>Minutes</span>`;
+            document.getElementById("seconds").innerHTML = `${seconds} <span>Seconds</span>`;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                document.getElementById("countdown").innerHTML = "It's here!";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

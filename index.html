@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AE Calculator - Engineering Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .tagline {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .contact-section {
+            text-align: center;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        .contact-button {
+            background: #3498db;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .contact-button:hover {
+            background: #2980b9;
+        }
+
+        /* Color variations for cards */
+        .card:nth-child(1) { border-top: 4px solid #e74c3c; }
+        .card:nth-child(2) { border-top: 4px solid #2ecc71; }
+        .card:nth-child(3) { border-top: 4px solid #f1c40f; }
+        .card:nth-child(4) { border-top: 4px solid #9b59b6; }
+        .card:nth-child(5) { border-top: 4px solid #e67e22; }
+        .card:nth-child(6) { border-top: 4px solid #1abc9c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">AE Calculator</div>
+            <p class="tagline">Empower Your Efficiency with our AE calculator</p>
+        </header>
+
+        <div class="grid">
+            <a href="TCR.html" class="card">
+                <h2>TCR Calculation</h2>
+                <p>Temperature Coefficient of Resistance calculator</p>
+            </a>
+
+            <a href="bending.html" class="card">
+                <h2>Bending Moment</h2>
+                <p>Structural bending moment calculator</p>
+            </a>
+
+            <a href="mechanical.html" class="card">
+                <h2>Mechanical Thread</h2>
+                <p>Thread specification and analysis tool</p>
+            </a>
+
+            <a href="electronics.html" class="card">
+                <h2>Electronics Calculation</h2>
+                <p>Circuit analysis and component calculator</p>
+            </a>
+
+            <a href="comingsoon.html" class="card">
+                <h2>Thermal Aging</h2>
+                <p>Material thermal aging analysis</p>
+            </a>
+
+            <a href="comingsoon.html" class="card">
+                <h2>Contact Resistance</h2>
+                <p>Electrical contact resistance calculator</p>
+            </a>
+        </div>
+
+        <div class="contact-section">
+            <h3>Need Custom Solutions?</h3>
+            <p>Contact us for specialized engineering calculations</p>
+            <br>
+            <button class="contact-button" onclick="location.href='https://forms.office.com/r/F8gDvF0LQt'">Contact Form</button>
+        </div>
+    </div>
+</body>
+</html>

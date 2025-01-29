@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanical Thread Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+            margin-right: 10px;
+        }
+        input, select {
+            padding: 5px;
+            width: 150px;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 5px;
+        }
+        .highlight {
+            color: #2c662d;
+            font-weight: bold;
+        }
+        .warning {
+            color: #cc0000;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Thread & Material Calculator</h2>
+        
+        <div class="input-group">
+            <label>Thread Type:</label>
+            <select id="threadType">
+                <option value="M6x1">M6x1</option>
+                <option value="M8x1.25">M8x1.25</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Nominal Diameter (mm):</label>
+            <input type="number" id="d" value="6" step="0.1">
+        </div>
+
+        <div class="input-group">
+            <label>Pitch (mm):</label>
+            <input type="number" id="p" value="1" step="0.1">
+        </div>
+
+        <div class="input-group">
+            <label>Axial Load (N):</label>
+            <input type="number" id="F" value="500">
+        </div>
+
+        <div class="input-group">
+            <label>Material:</label>
+            <select id="material">
+                <option value="Al6061">Aluminum 6061</option>
+                <option value="SS304">Stainless Steel 304</option>
+            </select>
+        </div>
+
+        <button onclick="calculate()">Calculate</button>
+        <button onclick="resetForm()">Reset</button>
+
+        <div class="results" id="results">
+            <!-- Results will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const materialProperties = {
+            'Al6061': {
+                yieldStrength: 276,
+                enduranceLimit: 103.5,
+                density: 2.7
+            },
+            'SS304': {
+                yieldStrength: 505,
+                enduranceLimit: 250,
+                density: 8.0
+            }
+        };
+
+        function calculate() {
+            // Input values
+            const d = parseFloat(document.getElementById('d').value);
+            const p = parseFloat(document.getElementById('p').value);
+            const F = parseFloat(document.getElementById('F').value);
+            const material = document.getElementById('material').value;
+            
+            // Thread calculations
+            const d2 = d - 0.6495 * p;
+            const d3 = d - 1.2268 * p;
+            const As = (Math.PI/4) * ((d2 + d3)/2)**2;
+            const tensileStress = F / As;
+            
+            // Material properties
+            const Sy = materialProperties[material].yieldStrength;
+            const Se = materialProperties[material].enduranceLimit;
+            
+            // Safety factors
+            const staticSafetyFactor = Sy / tensileStress;
+            const fatigueSafetyFactor = Se / tensileStress;
+            
+            // Engagement calculations
+            const Lmin = 1.5 * d;
+            const shearStress = F / (Math.PI * d * Lmin);
+            
+            // Display results
+            const results = `
+                <h3>Calculation Results:</h3>
+                <p>Pitch Diameter (d₂): <span class="highlight">${d2.toFixed(2)} mm</span></p>
+                <p>Core Diameter (d₃): <span class="highlight">${d3.toFixed(2)} mm</span></p>
+                <p>Stress Area (Aₛ): <span class="highlight">${As.toFixed(2)} mm²</span></p>
+                <p>Tensile Stress: <span class="highlight">${tensileStress.toFixed(2)} MPa</span></p>
+                <p>Static Safety Factor: <span class="${staticSafetyFactor < 2.5 ? 'warning' : 'highlight'}">${staticSafetyFactor.toFixed(1)}</span></p>
+                <p>Fatigue Safety Factor: <span class="${fatigueSafetyFactor < 2 ? 'warning' : 'highlight'}">${fatigueSafetyFactor.toFixed(1)}</span></p>
+                <p>Minimum Engagement Length: <span class="highlight">${Lmin.toFixed(1)} mm</span></p>
+                <p>Shear Stress in Engagement: <span class="highlight">${shearStress.toFixed(2)} MPa</span></p>
+                <p>Material: ${material} (Sy = ${Sy} MPa, Se = ${Se} MPa)</p>
+                ${tensileStress < Sy ? '<p class="highlight">Design is SAFE for static loads</p>' : 
+                 '<p class="warning">Design UNSAFE for static loads!</p>'}
+                ${tensileStress < Se ? '<p class="highlight">Design is SAFE for cyclic loads</p>' : 
+                 '<p class="warning">Design UNSAFE for cyclic loads!</p>'}
+            `;
+            
+            document.getElementById('results').innerHTML = results;
+        }
+
+        function resetForm() {
+            document.getElementById('d').value = 6;
+            document.getElementById('p').value = 1;
+            document.getElementById('F').value = 500;
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // Thread type selector logic
+        document.getElementById('threadType').addEventListener('change', function() {
+            const thread = this.value;
+            if(thread === 'M6x1') {
+                document.getElementById('d').value = 6;
+                document.getElementById('p').value = 1;
+            }
+            else if(thread === 'M8x1.25') {
+                document.getElementById('d').value = 8;
+                document.getElementById('p').value = 1.25;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AE Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .calc-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calc-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .calculator-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .result-box {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            color: #2c3e50;
+        }
+
+        .formula-note {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Engineering Calculator</h1>
+        
+        <div class="calculator-grid">
+            <button class="calc-btn" onclick="loadCalculator('ohms-law')">Ohm's Law</button>
+            <button class="calc-btn" onclick="loadCalculator('power')">Power Calculator</button>
+            <button class="calc-btn" onclick="loadCalculator('resistance')">Resistor Calculator</button>
+            <button class="calc-btn" onclick="loadCalculator('capacitance')">Capacitance</button>
+            <button class="calc-btn" onclick="loadCalculator('bending-moment')">Bending Moment</button>
+            <button class="calc-btn" onclick="loadCalculator('color-code')">Resistor Color Code</button>
+        </div>
+
+        <div id="calculator-form" class="calculator-form"></div>
+        <div id="result" class="result-box"></div>
+    </div>
+
+    <script>
+        // Calculator configurations
+        const calculators = {
+            'ohms-law': {
+                title: 'Ohm\'s Law Calculator',
+                inputs: [
+                    {id: 'voltage', label: 'Voltage (V)', type: 'number'},
+                    {id: 'current', label: 'Current (I)', type: 'number'},
+                    {id: 'resistance', label: 'Resistance (Ω)', type: 'number'}
+                ],
+                calculate: () => {
+                    const V = parseFloat(document.getElementById('voltage').value);
+                    const I = parseFloat(document.getElementById('current').value);
+                    const R = parseFloat(document.getElementById('resistance').value);
+                    
+                    if (!isNaN(V) && !isNaN(I)) {
+                        return `Resistance: ${(V / I).toFixed(2)} Ω`;
+                    }
+                    if (!isNaN(V) && !isNaN(R)) {
+                        return `Current: ${(V / R).toFixed(2)} A`;
+                    }
+                    if (!isNaN(I) && !isNaN(R)) {
+                        return `Voltage: ${(I * R).toFixed(2)} V`;
+                    }
+                    return 'Enter any two values';
+                },
+                formula: 'V = I × R'
+            },
+
+            'power': {
+                title: 'Power Calculator',
+                inputs: [
+                    {id: 'voltage', label: 'Voltage (V)', type: 'number'},
+                    {id: 'current', label: 'Current (I)', type: 'number'}
+                ],
+                calculate: () => {
+                    const V = parseFloat(document.getElementById('voltage').value);
+                    const I = parseFloat(document.getElementById('current').value);
+                    return `Power: ${(V * I).toFixed(2)} W`;
+                },
+                formula: 'P = V × I'
+            },
+
+            'resistance': {
+                title: 'Resistor Calculator',
+                inputs: [
+                    {id: 'r1', label: 'Resistor 1 (Ω)', type: 'number'},
+                    {id: 'r2', label: 'Resistor 2 (Ω)', type: 'number'},
+                    {id: 'config', label: 'Configuration', type: 'select', options: [
+                        {value: 'series', label: 'Series'},
+                        {value: 'parallel', label: 'Parallel'}
+                    ]}
+                ],
+                calculate: () => {
+                    const r1 = parseFloat(document.getElementById('r1').value);
+                    const r2 = parseFloat(document.getElementById('r2').value);
+                    const config = document.getElementById('config').value;
+                    
+                    if(config === 'series') {
+                        return `Total Resistance: ${(r1 + r2).toFixed(2)} Ω`;
+                    }
+                    return `Total Resistance: ${((r1 * r2) / (r1 + r2)).toFixed(2)} Ω`;
+                }
+            },
+
+            'bending-moment': {
+                title: 'Bending Moment Calculator',
+                inputs: [
+                    {id: 'load', label: 'Load (N)', type: 'number'},
+                    {id: 'length', label: 'Length (m)', type: 'number'},
+                    {id: 'load-type', label: 'Load Type', type: 'select', options: [
+                        {value: 'point', label: 'Point Load'},
+                        {value: 'distributed', label: 'Distributed Load'}
+                    ]}
+                ],
+                calculate: () => {
+                    const load = parseFloat(document.getElementById('load').value);
+                    const length = parseFloat(document.getElementById('length').value);
+                    const loadType = document.getElementById('load-type').value;
+                    
+                    if(loadType === 'point') {
+                        return `Bending Moment: ${(load * length).toFixed(2)} N·m`;
+                    }
+                    return `Bending Moment: ${(load * length * length / 8).toFixed(2)} N·m`;
+                }
+            },
+
+            'color-code': {
+                title: 'Resistor Color Code Decoder',
+                inputs: [
+                    {id: 'band1', label: 'Band 1', type: 'select', options: [
+                        {value: 'black', label: 'Black'}, {value: 'brown', label: 'Brown'},
+                        {value: 'red', label: 'Red'}, {value: 'orange', label: 'Orange'},
+                        {value: 'yellow', label: 'Yellow'}, {value: 'green', label: 'Green'},
+                        {value: 'blue', label: 'Blue'}, {value: 'violet', label: 'Violet'},
+                        {value: 'gray', label: 'Gray'}, {value: 'white', label: 'White'}
+                    ]},
+                    {id: 'band2', label: 'Band 2', type: 'select', options: [
+                        {value: 'black', label: 'Black'}, {value: 'brown', label: 'Brown'},
+                        {value: 'red', label: 'Red'}, {value: 'orange', label: 'Orange'},
+                        {value: 'yellow', label: 'Yellow'}, {value: 'green', label: 'Green'},
+                        {value: 'blue', label: 'Blue'}, {value: 'violet', label: 'Violet'},
+                        {value: 'gray', label: 'Gray'}, {value: 'white', label: 'White'}
+                    ]},
+                    {id: 'multiplier', label: 'Multiplier', type: 'select', options: [
+                        {value: 'silver', label: 'Silver'}, {value: 'gold', label: 'Gold'},
+                        {value: 'black', label: 'Black'}, {value: 'brown', label: 'Brown'},
+                        {value: 'red', label: 'Red'}, {value: 'orange', label: 'Orange'},
+                        {value: 'yellow', label: 'Yellow'}, {value: 'green', label: 'Green'},
+                        {value: 'blue', label: 'Blue'}
+                    ]}
+                ],
+                calculate: () => {
+                    const colorCodes = {
+                        black: 0, brown: 1, red: 2, orange: 3, yellow: 4,
+                        green: 5, blue: 6, violet: 7, gray: 8, white: 9,
+                        gold: 0.1, silver: 0.01
+                    };
+
+                    const multipliers = {
+                        silver: 0.01, gold: 0.1,
+                        black: 1, brown: 10, red: 100, orange: 1000,
+                        yellow: 10000, green: 100000, blue: 1000000
+                    };
+
+                    const band1 = colorCodes[document.getElementById('band1').value];
+                    const band2 = colorCodes[document.getElementById('band2').value];
+                    const multiplier = multipliers[document.getElementById('multiplier').value];
+
+                    const resistance = (band1 * 10 + band2) * multiplier;
+                    return `Resistance: ${resistance} Ω ±5%`;
+                }
+            }
+        };
+
+        // Load calculator form
+        function loadCalculator(calcType) {
+            const calc = calculators[calcType];
+            let formHTML = `<h3>${calc.title}</h3>`;
+
+            calc.inputs.forEach(input => {
+                formHTML += `<div class="input-group">
+                    <label>${input.label}</label>`;
+                
+                if(input.type === 'select') {
+                    formHTML += `<select id="${input.id}">`;
+                    input.options.forEach(option => {
+                        formHTML += `<option value="${option.value}">${option.label}</option>`;
+                    });
+                    formHTML += `</select>`;
+                } else {
+                    formHTML += `<input type="${input.type}" id="${input.id}">`;
+                }
+                
+                formHTML += `</div>`;
+            });
+
+            formHTML += `<button class="calc-btn" onclick="calculate('${calcType}')">Calculate</button>`;
+            if(calc.formula) {
+                formHTML += `<div class="formula-note">Formula: ${calc.formula}</div>`;
+            }
+
+            document.getElementById('calculator-form').innerHTML = formHTML;
+            document.getElementById('result').innerHTML = '';
+        }
+
+        // Perform calculation
+        function calculate(calcType) {
+            const result = calculators[calcType].calculate();
+            document.getElementById('result').innerHTML = result;
+        }
+
+        // Initialize with first calculator
+        loadCalculator('ohms-law');
+    </script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Change of Resistance Due To TCR Calculator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    .container {
+      width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Change of Resistance Due To TCR Calculator</h1>
+    <label for="initialResistance">Initial Resistance Value:</label>
+    <input type="text" id="initialResistance" placeholder="Enter resistance in Ohms">
+    <select id="resistanceUnit">
+      <option value="Ω">Ω</option>
+    </select>
+
+    <label>Select either a single TCR ±°C value, or an TCR Range</label>
+    <div>
+      <label for="singleTCR">TCR Of Resistor (in ppm/C):</label>
+      <input type="text" id="singleTCR" placeholder="Enter TCR value">
+      <select id="singleTCRUnit">
+        <option value="±°C">±°C</option>
+      </select>
+    </div>
+    <div>
+      <label for="TCRRangeStart">TCR Range Of Resistor (in ppm/C):</label>
+      <input type="text" id="TCRRangeStart" placeholder="Enter starting TCR value">
+      <select id="TCRRangeStartUnit">
+        <option value="+°C">+°C</option>
+      </select>
+      <span>to</span>
+      <input type="text" id="TCRRangeEnd" placeholder="Enter ending TCR value">
+      <select id="TCRRangeEndUnit">
+        <option value="+°C">+°C</option>
+      </select>
+    </div>
+
+    <label for="startingTemperature">Starting Temperature:</label>
+    <input type="text" id="startingTemperature" placeholder="Enter starting temperature">
+    <select id="temperatureUnit">
+      <option value="°C">°C</option>
+    </select>
+
+    <label for="endingTemperature">Ending Temperature:</label>
+    <input type="text" id="endingTemperature" placeholder="Enter ending temperature">
+    <select id="temperatureUnit">
+      <option value="°C">°C</option>
+    </select>
+
+    <button id="computeButton">Compute</button>
+    <button id="resetButton">Reset</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const initialResistanceInput = document.getElementById("initialResistance");
+    const singleTCRInput = document.getElementById("singleTCR");
+    const TCRRangeStartInput = document.getElementById("TCRRangeStart");
+    const TCRRangeEndInput = document.getElementById("TCRRangeEnd");
+    const startingTemperatureInput = document.getElementById("startingTemperature");
+    const endingTemperatureInput = document.getElementById("endingTemperature");
+    const resultDiv = document.getElementById("result");
+    const computeButton = document.getElementById("computeButton");
+    const resetButton = document.getElementById("resetButton");
+
+    computeButton.addEventListener("click", () => {
+      const initialResistance = parseFloat(initialResistanceInput.value);
+      const singleTCR = parseFloat(singleTCRInput.value);
+      const TCRRangeStart = parseFloat(TCRRangeStartInput.value);
+      const TCRRangeEnd = parseFloat(TCRRangeEndInput.value);
+      const startingTemperature = parseFloat(startingTemperatureInput.value);
+      const endingTemperature = parseFloat(endingTemperatureInput.value);
+
+      // Validate inputs
+      if (isNaN(initialResistance) || initialResistance <= 0) {
+        resultDiv.textContent = "Please enter a valid initial resistance value.";
+        return;
+      }
+
+      // Calculate change in resistance
+      let changeInResistance;
+      if (!isNaN(singleTCR)) {
+        changeInResistance = calculateResistanceChange(
+          initialResistance,
+          singleTCR,
+          startingTemperature,
+          endingTemperature
+        );
+      } else if (!isNaN(TCRRangeStart) && !isNaN(TCRRangeEnd)) {
+        changeInResistance = calculateResistanceChangeRange(
+          initialResistance,
+          TCRRangeStart,
+          TCRRangeEnd,
+          startingTemperature,
+          endingTemperature
+        );
+      } else {
+        resultDiv.textContent = "Please enter either a single TCR value or a TCR range.";
+        return;
+      }
+
+      // Display result
+      resultDiv.textContent = `Change in resistance: ${changeInResistance.toFixed(2)} Ω`;
+    });
+
+    resetButton.addEventListener("click", () => {
+      initialResistanceInput.value = "";
+      singleTCRInput.value = "";
+      TCRRangeStartInput.value = "";
+      TCRRangeEndInput.value = "";
+      startingTemperatureInput.value = "";
+      endingTemperatureInput.value = "";
+      resultDiv.textContent = "";
+    });
+
+    // Helper functions for resistance change calculation
+    function calculateResistanceChange(
+      initialResistance,
+      TCR,
+      startingTemperature,
+      endingTemperature
+    ) {
+      const temperatureDifference = endingTemperature - startingTemperature;
+      const resistanceChange =
+        (initialResistance * TCR * temperatureDifference) / 1000000;
+      return resistanceChange;
+    }
+
+    function calculateResistanceChangeRange(
+      initialResistance,
+      TCRRangeStart,
+      TCRRangeEnd,
+      startingTemperature,
+      endingTemperature
+    ) {
+      const temperatureDifference = endingTemperature - startingTemperature;
+      const resistanceChangeStart =
+        (initialResistance * TCRRangeStart * temperatureDifference) / 1000000;
+      const resistanceChangeEnd =
+        (initialResistance * TCRRangeEnd * temperatureDifference) / 1000000;
+      return `between ${resistanceChangeStart.toFixed(2)} Ω and ${resistanceChangeEnd.toFixed(2)} Ω`;
+    }
+  </script>
+</body>
+</html>
